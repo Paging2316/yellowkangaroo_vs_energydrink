@@ -3,455 +3,518 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yellow Kangaroo | Full Analysis Dashboard</title>
+    <title>Yellow Kangaroo | Full Synergy & Compliance Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
         
-        :root {
-            --brand-yellow: #F59E0B;
-            --brand-dark: #0F172A;
-            --brand-light: #F8FAFC;
-        }
-
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--brand-light);
-            color: var(--brand-dark);
-            scroll-behavior: smooth;
+            font-family: 'Inter', sans-serif;
+            background-color: #FAFAFA;
+            color: #1F2937;
         }
 
         .chart-container {
             position: relative;
             width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
             height: 350px;
-            max-width: 100%;
+            max-height: 400px;
         }
 
-        .section-card {
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        .tab-active {
+            border-bottom-width: 4px;
+            border-color: #F59E0B;
+            color: #D97706;
+            font-weight: 600;
+        }
+
+        .legal-box {
+            border-left: 4px solid #F59E0B;
+            background: #FFFBEB;
+        }
+
+        .science-card {
             transition: all 0.3s ease;
         }
 
-        .section-card:hover {
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-        }
-
-        .nav-link {
-            position: relative;
-            transition: color 0.3s;
-        }
-        
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -4px;
-            left: 0;
-            background-color: var(--brand-yellow);
-            transition: width 0.3s;
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
+        .science-card:hover {
+            transform: translateY(-5px);
+            border-color: #F59E0B;
         }
 
         .badge-safe { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
         .badge-warning { background-color: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
 
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade { animation: fadeIn 0.5s ease-out forwards; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FBBF24; 
+            border-radius: 4px;
+        }
     </style>
-    <!-- Chosen Palette: Modern Enterprise (White, Slate-900, Amber-500) -->
+    <!-- Chosen Palette: Warm Neutrals & Energetic Yellow (Background: #FAFAFA, Accents: #F59E0B) -->
     <!-- Application Structure Plan: 
-         1. Unified Header: Quick navigation to Performance, Science, Ingredients, and Compliance.
-         2. Executive Summary: Radar chart comparing the Spray vs. Drinks across lifestyle metrics.
-         3. Kinetic Science: Line chart visualizing Sublingual absorption vs. Gastric digestion.
-         4. Ingredient Lab: Interactive breakdown of the user's specific formula (12.5mg Guarana, 25mg Caffeine, etc.).
-         5. Regulatory Matrix: EU Health Claims verification for B-Vitamins (15% NRV threshold).
-         6. Marketing Matrix: High-impact claims for high-performance personas.
+         1. Hero Section: Immediate context and value proposition.
+         2. Overview (Market Radar): Comparative analysis of Spray vs. Drink.
+         3. Ingredients (Interactive): Deep dive into the specific formula provided by the user.
+         4. Bioavailability (Absorption Science): Explaining the 'First-Pass Bypass'.
+         5. Legal/Rechtssicherheit (Deep Compliance): Full EU NHCR analysis and NRV check.
+         6. Marketing Matrix: Actionable pitches and wording strategy.
     -->
     <!-- Visualization & Content Choices:
-         - Radar Chart: Ideal for multi-variable qualitative comparison.
-         - Line Chart: Essential for showing the 'Absorption Speed' advantage.
-         - Dynamic Ingredient Cards: Handles complex dosing data cleanly.
-         - Compliance Table: Provides direct legal security for marketing teams.
-         CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
+         - Radar Chart: Lifestyle/Performance comparison.
+         - Line Chart: Absorption kinetics (Sublingual vs Gastric).
+         - Interactive Detail View: Deep analysis of each ingredient.
+         - Compliance Matrix: Detailed table for legal security.
+         CONFIRMATION: NO SVG used. NO Mermaid JS used.
     -->
 </head>
-<body class="antialiased">
+<body class="antialiased selection:bg-yellow-200">
 
     <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200">
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur shadow-sm border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center gap-2">
-                    <div class="bg-amber-500 p-1.5 rounded-lg text-white font-black text-xs">YK</div>
-                    <span class="font-extrabold text-lg tracking-tight">KANGAROO <span class="text-amber-500 text-sm">REPORTS</span></span>
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl mr-2">🦘</span>
+                    <span class="font-extrabold text-xl tracking-tight text-gray-900 uppercase">Yellow Kangaroo <span class="text-yellow-500">Insights</span></span>
                 </div>
-                <div class="hidden md:flex space-x-6 text-sm font-bold text-slate-600 uppercase tracking-tighter">
-                    <a href="#performance" class="nav-link">Performance</a>
-                    <a href="#science" class="nav-link">Wissenschaft</a>
-                    <a href="#ingredients" class="nav-link">Inhaltsstoffe</a>
-                    <a href="#legal" class="nav-link">Rechtssicherheit</a>
+                <div class="hidden lg:flex space-x-6 items-center">
+                    <a href="#overview" class="text-gray-600 hover:text-yellow-600 text-xs font-bold uppercase transition-colors">Übersicht</a>
+                    <a href="#ingredients" class="text-gray-600 hover:text-yellow-600 text-xs font-bold uppercase transition-colors">Inhaltsstoffe</a>
+                    <a href="#bioavailability" class="text-gray-600 hover:text-yellow-600 text-xs font-bold uppercase transition-colors">Wirkung</a>
+                    <a href="#legal" class="text-gray-600 hover:text-yellow-600 text-xs font-bold uppercase transition-colors">Rechtssicherheit</a>
+                    <a href="#marketing" class="bg-yellow-500 text-gray-900 px-4 py-2 rounded-lg text-xs font-bold uppercase hover:bg-yellow-400 transition-colors">Marketing</a>
                 </div>
-                <div class="bg-amber-100 px-3 py-1 rounded-full text-[10px] font-black text-amber-600 uppercase">Status: Final</div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <header class="bg-slate-900 text-white py-16 md:py-24 relative overflow-hidden">
-        <div class="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl -mr-48 -mt-48"></div>
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-            <h1 class="text-4xl md:text-6xl font-black mb-6 tracking-tight">Analyse-Report: Yellow Kangaroo Spray</h1>
-            <p class="text-slate-400 max-w-2xl mx-auto text-lg md:text-xl">
-                Zusammenführung der Marktanalyse und der wissenschaftlichen Compliance-Prüfung basierend auf der exakten Rezeptur.
+    <div class="bg-gray-900 text-white py-20 relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-yellow-500 opacity-20 blur-3xl"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center md:text-left">
+            <h1 class="text-4xl md:text-6xl font-black tracking-tighter mb-6 leading-none">
+                ENERGIE DER <br><span class="text-yellow-500">NÄCHSTEN GENERATION.</span>
+            </h1>
+            <p class="text-xl text-gray-400 max-w-2xl mb-10 leading-relaxed">
+                Warum Mikrodosierung und sublinguale Aufnahme klassische Energydrinks überholen. Eine datengetriebene Analyse der Rezeptur und der rechtlichen Health-Claims.
             </p>
-            <div class="mt-10 flex flex-wrap justify-center gap-4">
-                <div class="bg-slate-800 px-6 py-3 rounded-2xl border border-slate-700">
-                    <span class="block text-amber-500 font-black text-xl">25 mg</span>
-                    <span class="text-[10px] uppercase font-bold text-slate-400">Coffein / Shot</span>
+            <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+                <div class="bg-gray-800 px-6 py-3 rounded-2xl border border-gray-700">
+                    <span class="block text-yellow-500 font-black text-xl">25 mg</span>
+                    <span class="text-[10px] uppercase font-bold text-gray-400">Coffein / Kick</span>
                 </div>
-                <div class="bg-slate-800 px-6 py-3 rounded-2xl border border-slate-700">
-                    <span class="block text-amber-500 font-black text-xl">15% NRV</span>
-                    <span class="text-[10px] uppercase font-bold text-slate-400">B-Vitamin Komplex</span>
+                <div class="bg-gray-800 px-6 py-3 rounded-2xl border border-gray-700">
+                    <span class="block text-yellow-500 font-black text-xl">15% NRV</span>
+                    <span class="text-[10px] uppercase font-bold text-gray-400">B-Vitamin Komplex</span>
                 </div>
-                <div class="bg-slate-800 px-6 py-3 rounded-2xl border border-slate-700">
-                    <span class="block text-amber-500 font-black text-xl">Sublingual</span>
-                    <span class="text-[10px] uppercase font-bold text-slate-400">Aufnahme-Modus</span>
+                <div class="bg-gray-800 px-6 py-3 rounded-2xl border border-gray-700">
+                    <span class="block text-yellow-500 font-black text-xl">0 g</span>
+                    <span class="text-[10px] uppercase font-bold text-gray-400">Zucker & Crash</span>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-24">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-32">
 
-        <!-- PART 1: PERFORMANCE EXPERIENCE -->
-        <section id="performance" class="scroll-mt-24">
-            <div class="flex flex-col md:flex-row gap-12 items-center">
-                <div class="w-full md:w-1/2">
-                    <h2 class="text-3xl font-black text-slate-900 mb-6 flex items-center gap-3">
-                        <span class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg">1</span>
-                        Das Markt-Profil
-                    </h2>
-                    <p class="text-slate-600 mb-8 leading-relaxed text-lg">
-                        Im Vergleich zu Standard-Energydrinks punktet der Spray nicht durch die absolute Menge, sondern durch die **Effizienz der Anflutung**. Er eliminiert das "Völlegefühl" und den gefährlichen "Zucker-Crash".
-                    </p>
-                    <div class="space-y-4">
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200 flex items-center gap-4">
-                            <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center text-xl">🚀</div>
-                            <div>
-                                <h4 class="font-bold">Sofortige Einsatzbereitschaft</h4>
-                                <p class="text-sm text-slate-500 italic">Wirkt in Sekunden durch Direkt-Absorption.</p>
-                            </div>
-                        </div>
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200 flex items-center gap-4">
-                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-xl">🧠</div>
-                            <div>
-                                <h4 class="font-bold">Mentaler Fokus statt Herzrasen</h4>
-                                <p class="text-sm text-slate-500 italic">Präzise Dosierung verhindert Überreizung.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="w-full md:w-1/2 section-card p-8 bg-white">
-                    <h3 class="text-center font-bold text-slate-400 uppercase text-xs tracking-widest mb-6">Lifestyle- & Wirkungsvergleich</h3>
+        <!-- 1. OVERVIEW (MARKET RADAR) -->
+        <section id="overview" class="scroll-mt-20">
+            <div class="mb-12 text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight uppercase">Markt-Paradigma: Spray vs. Dose</h2>
+                <p class="text-gray-600 text-lg">
+                    Es geht nicht mehr um die absolute Menge an Wirkstoffen, sondern um die <strong>Wirkeffizienz</strong>. Der Spray optimiert die Aufnahme und eliminiert Ballaststoffe wie Zucker und unnötige Flüssigkeit.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold mb-8 text-center uppercase tracking-widest text-gray-400">Performance Vergleich</h3>
                     <div class="chart-container">
                         <canvas id="radarChart"></canvas>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- PART 2: SCIENCE & BIOAVAILABILITY -->
-        <section id="science" class="scroll-mt-24">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-black text-slate-900 mb-4">Pharmakokinetische Überlegenheit</h2>
-                <p class="text-slate-500 max-w-2xl mx-auto">Der "First-Pass-Bypass": Warum 25mg Coffein im Mund stärker sind als 80mg im Magen.</p>
-            </div>
-            
-            <div class="bg-white rounded-[2rem] p-8 md:p-12 border border-slate-200 shadow-sm overflow-hidden relative">
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
-                    <div class="lg:col-span-3">
-                        <div class="chart-container">
-                            <canvas id="kineticsChart"></canvas>
+                <div class="space-y-8">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-12 w-12 rounded-2xl bg-yellow-100 flex items-center justify-center text-2xl">🚀</div>
+                        <div class="ml-5">
+                            <h4 class="text-lg font-bold text-gray-900">Kein First-Pass-Effekt</h4>
+                            <p class="text-gray-600 mt-1 italic">Während Drinks durch Magen und Leber gefiltert werden, geht der Spray direkt unter die Zunge (Sublingual). Dies spart Zeit und schont die Organe.</p>
                         </div>
                     </div>
-                    <div class="lg:col-span-2 space-y-6">
-                        <div class="p-6 bg-slate-900 rounded-3xl text-white relative">
-                            <div class="absolute -top-4 -right-4 w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center font-black text-slate-900 border-4 border-slate-900">!</div>
-                            <h4 class="font-black text-amber-500 text-sm mb-2 uppercase tracking-widest">Die Bio-Hacker Logik</h4>
-                            <p class="text-sm text-slate-300 leading-relaxed">
-                                Getrunkene Energydrinks unterliegen dem **First-Pass-Effekt**. Die Leber metabolisiert einen Großteil des Coffeins, bevor es das Gehirn erreicht. Der sublinguale Spray nutzt die direkte Verbindung zum Blutkreislauf.
-                            </p>
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-12 w-12 rounded-2xl bg-red-100 flex items-center justify-center text-2xl">📉</div>
+                        <div class="ml-5">
+                            <h4 class="text-lg font-bold text-gray-900">Crash-Free Fokus</h4>
+                            <p class="text-gray-600 mt-1 italic">Energydrinks enthalten ca. 27g Zucker (Red Bull). Dies führt zu einem Insulin-Peak und einem harten Leistungseinbruch nach 60-90 Minuten.</p>
                         </div>
-                        <div class="p-6 bg-amber-50 rounded-3xl border border-amber-100">
-                            <h4 class="font-black text-amber-900 text-sm mb-2 uppercase tracking-widest">Synergie-Effekt</h4>
-                            <p class="text-sm text-amber-800 leading-relaxed italic">
-                                "Guarana liefert das Fundament, reines Coffein den Kick, Ginseng die Stress-Resilienz."
-                            </p>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-12 w-12 rounded-2xl bg-blue-100 flex items-center justify-center text-2xl">💼</div>
+                        <div class="ml-5">
+                            <h4 class="text-lg font-bold text-gray-900">Optimale Portabilität</h4>
+                            <p class="text-gray-600 mt-1 italic">Energy für 20+ Situationen in der Hosentasche. Kein Toilettengang durch Flüssigkeitsmengen nötig.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- PART 3: INGREDIENT LABORATORY -->
-        <section id="ingredients" class="scroll-mt-24 bg-slate-50 py-12 px-6 rounded-[3rem]">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-black text-slate-900 mb-2">Wirkstoff-Labor</h2>
-                <p class="text-slate-500">Klicken Sie auf eine Komponente für die wissenschaftliche Analyse Ihrer Rezeptur.</p>
+        <!-- 2. INGREDIENTS (INTERACTIVE LABORATORY) -->
+        <section id="ingredients" class="scroll-mt-20 bg-gray-50 py-16 px-6 md:px-12 rounded-[3rem]">
+            <div class="mb-12 text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight uppercase">Wirkstoff-Labor</h2>
+                <p class="text-gray-600 text-lg italic">
+                    Klicken Sie auf die Komponenten, um die spezifische EU-Wirkungsanalyse und die genauen Mengen (pro Portion) einzusehen.
+                </p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Navigation -->
-                <div class="md:col-span-1 space-y-3" id="ing-nav">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <!-- Nav List -->
+                <div class="lg:col-span-1 space-y-3" id="ingredient-nav">
                     <!-- Dynamic -->
                 </div>
-                <!-- Content Display -->
-                <div class="md:col-span-3 bg-white border border-slate-200 rounded-[2rem] p-8 md:p-12 min-h-[400px]" id="ing-display">
-                    <!-- Default loaded via JS -->
+                <!-- Display Detail -->
+                <div class="lg:col-span-2 bg-white rounded-[2.5rem] shadow-xl p-10 border border-gray-100 relative min-h-[500px]" id="ingredient-display">
+                    <!-- Default state -->
                 </div>
             </div>
         </section>
 
-        <!-- PART 4: LEGAL COMPLIANCE MATRIX -->
-        <section id="legal" class="scroll-mt-24">
-            <div class="mb-10 text-center">
-                <h2 class="text-3xl font-black text-slate-900">EU Health-Claims & Rechtssicherheit</h2>
-                <p class="text-slate-500 mt-2">Überprüfung der Werbefähigkeit nach Verordnung (EG) Nr. 1924/2006.</p>
+        <!-- 3. BIOAVAILABILITY (THE SCIENCE OF SPEED) -->
+        <section id="bioavailability" class="scroll-mt-20">
+            <div class="max-w-4xl mx-auto text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight uppercase">Die Biologie des Wirkeintritts</h2>
+                <p class="text-gray-600 text-lg leading-relaxed">
+                    Ein häufiges Missverständnis: "Mehr mg Coffein = Mehr Wirkung". <br>
+                    <strong>Entscheidend ist die Kinetik.</strong> Getränke werden im Magen verdünnt und unterliegen dem First-Pass-Effekt der Leber. Der Spray nutzt die direkte Diffusion.
+                </p>
             </div>
-            
-            <div class="overflow-x-auto rounded-[2rem] border border-slate-200 shadow-sm bg-white">
+
+            <div class="bg-white p-8 md:p-12 rounded-[3rem] shadow-sm border border-gray-100 max-w-5xl mx-auto">
+                <h3 class="text-xl font-bold mb-6 text-center uppercase tracking-widest text-gray-400">Absorptionskurve (Blutkonzentration über Zeit)</h3>
+                <div class="chart-container">
+                    <canvas id="kineticsChart"></canvas>
+                </div>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+                    <div class="p-6 bg-yellow-50 rounded-2xl border border-yellow-100 science-card">
+                        <strong class="text-yellow-600 block text-lg mb-2">🟡 Yellow Kangaroo (Sublingual)</strong>
+                        <ul class="space-y-2 text-gray-600">
+                            <li>• Wirkt innerhalb von 1-3 Minuten (Direkt ins Blut).</li>
+                            <li>• Maximale Bioverfügbarkeit ohne Wirkstoffverlust in der Leber.</li>
+                            <li>• Guarana verlängert das Plateau auf bis zu 4 Stunden ("Smooth Energy").</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100 science-card">
+                        <strong class="text-blue-600 block text-lg mb-2">🔵 Klassischer Energydrink (Oral)</strong>
+                        <ul class="space-y-2 text-gray-600">
+                            <li>• Wirkt erst nach ca. 30-45 Minuten (Magenpassagemodell).</li>
+                            <li>• First-Pass-Effekt zerstört signifikante Wirkstoffanteile.</li>
+                            <li>• Steiler Abfall durch Insulin-Reaktion (Sugar-Crash).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. RECHTSSICHERHEIT (NHCR DEEP DIVE) -->
+        <section id="legal" class="scroll-mt-20">
+            <div class="max-w-4xl mx-auto mb-12">
+                <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight uppercase">EU-Rechtssicherheit & Health Claims</h2>
+                <p class="text-gray-600 text-lg leading-relaxed">
+                    Die EU-Verordnung (EG) Nr. 1924/2006 (NHCR) regelt streng, welche gesundheitsbezogenen Angaben erlaubt sind. Yellow Kangaroo ist präzise auf diese Schwellenwerte optimiert.
+                </p>
+                <div class="legal-box p-8 mt-8 rounded-[2rem] shadow-sm">
+                    <h4 class="font-black text-amber-900 text-xl mb-4 flex items-center gap-2">
+                        <span>⚖️</span> Der 15% NRV Schwellenwert
+                    </h4>
+                    <p class="text-amber-800 leading-relaxed italic">
+                        Damit ein Produkt mit Vitaminen werben darf, muss es eine "signifikante Menge" enthalten. Bei Getränken/Sprays sind dies <strong>15 % des Nährstoffbezugswerts (NRV)</strong> pro Portion. Da Yellow Kangaroo exakt 15 % für B12, B6, B3 und B5 liefert, sind die Claims für "Verringerung von Müdigkeit" und "Geistige Leistung" juristisch wasserdicht.
+                    </p>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-[2.5rem] border border-gray-200 shadow-2xl bg-white">
                 <table class="w-full text-left">
-                    <thead class="bg-slate-900 text-white">
+                    <thead class="bg-gray-900 text-white">
                         <tr>
                             <th class="px-8 py-6 text-xs font-black uppercase tracking-widest">Wirkstoff</th>
-                            <th class="px-8 py-6 text-xs font-black uppercase tracking-widest">Zugelassener Health Claim</th>
-                            <th class="px-8 py-6 text-xs font-black uppercase tracking-widest text-center">Marketing-Status</th>
+                            <th class="px-8 py-6 text-xs font-black uppercase tracking-widest">Menge & NRV</th>
+                            <th class="px-8 py-6 text-xs font-black uppercase tracking-widest">Zulässiger EU-Wortlaut</th>
+                            <th class="px-8 py-6 text-xs font-black uppercase tracking-widest text-center">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-gray-100">
                         <tr>
-                            <td class="px-8 py-6 font-bold text-slate-900 italic">B12 / B6 / Niacin (15% NRV)</td>
-                            <td class="px-8 py-6 text-slate-600 text-sm">
-                                „Trägt zur Verringerung von Müdigkeit und Ermüdung bei.“ <br>
-                                „Trägt zu einem normalen Energiestoffwechsel bei.“
-                            </td>
-                            <td class="px-8 py-6 text-center">
-                                <span class="badge-safe px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">100% Sicher</span>
-                            </td>
+                            <td class="px-8 py-6 font-extrabold text-gray-900 italic">Vitamin B12 / B6</td>
+                            <td class="px-8 py-6 font-mono text-sm">0,375µg / 0,21mg (15%)</td>
+                            <td class="px-8 py-6 text-sm text-gray-600">„Trägt zur Verringerung von Müdigkeit und Ermüdung bei.“ <br> „Trägt zu einem normalen Energiestoffwechsel bei.“</td>
+                            <td class="px-8 py-6 text-center"><span class="badge-safe px-3 py-1 rounded-full text-[10px] font-black uppercase">100% Legal</span></td>
                         </tr>
                         <tr>
-                            <td class="px-8 py-6 font-bold text-slate-900 italic">Pantothensäure (B5)</td>
-                            <td class="px-8 py-6 text-slate-600 text-sm">
-                                „Trägt zu einer normalen geistigen Leistung bei.“
-                            </td>
-                            <td class="px-8 py-6 text-center">
-                                <span class="badge-safe px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">100% Sicher</span>
-                            </td>
+                            <td class="px-8 py-6 font-extrabold text-gray-900 italic">Pantothensäure (B5)</td>
+                            <td class="px-8 py-6 font-mono text-sm">0,9 mg (15%)</td>
+                            <td class="px-8 py-6 text-sm text-gray-600">„Trägt zu einer normalen geistigen Leistung bei.“</td>
+                            <td class="px-8 py-6 text-center"><span class="badge-safe px-3 py-1 rounded-full text-[10px] font-black uppercase">100% Legal</span></td>
                         </tr>
                         <tr>
-                            <td class="px-8 py-6 font-bold text-slate-900 italic">Coffein & Guarana</td>
-                            <td class="px-8 py-6 text-slate-600 text-sm italic">
-                                „Trägt zur Steigerung der Aufmerksamkeit und Konzentration bei.“ (EFSA On-Hold/Botanicals)
-                            </td>
-                            <td class="px-8 py-6 text-center">
-                                <span class="badge-warning px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Vorsicht / Nutbar</span>
-                            </td>
+                            <td class="px-8 py-6 font-extrabold text-gray-900 italic">Niacin (B3)</td>
+                            <td class="px-8 py-6 font-mono text-sm">2,4 mg (15%)</td>
+                            <td class="px-8 py-6 text-sm text-gray-600">„Trägt zu einem normalen Energiestoffwechsel bei.“</td>
+                            <td class="px-8 py-6 text-center"><span class="badge-safe px-3 py-1 rounded-full text-[10px] font-black uppercase">100% Legal</span></td>
                         </tr>
                         <tr>
-                            <td class="px-8 py-6 font-bold text-slate-900 italic">Ginseng Extrakt</td>
-                            <td class="px-8 py-6 text-slate-600 text-sm italic">
-                                „Unterstützt die kognitive und mentale Leistungsfähigkeit.“ (Pending Claim)
-                            </td>
-                            <td class="px-8 py-6 text-center">
-                                <span class="badge-warning px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">Botanical Claim</span>
-                            </td>
+                            <td class="px-8 py-6 font-extrabold text-gray-400 italic">Coffein & Guarana</td>
+                            <td class="px-8 py-6 font-mono text-sm">25 mg / 12,5 mg</td>
+                            <td class="px-8 py-6 text-sm text-gray-400 italic italic">„Hilft, die Konzentration zu verbessern.“ (Botanical Claim - EFSA on-hold)</td>
+                            <td class="px-8 py-6 text-center"><span class="badge-warning px-3 py-1 rounded-full text-[10px] font-black uppercase">Nutzen</span></td>
+                        </tr>
+                        <tr>
+                            <td class="px-8 py-6 font-extrabold text-gray-400 italic">Ginseng Wurzel</td>
+                            <td class="px-8 py-6 font-mono text-sm">7,5 mg</td>
+                            <td class="px-8 py-6 text-sm text-gray-400 italic">„Unterstützt die kognitive und mentale Leistungsfähigkeit.“ (Pending Claim)</td>
+                            <td class="px-8 py-6 text-center"><span class="badge-warning px-3 py-1 rounded-full text-[10px] font-black uppercase">Botanical</span></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="mt-6 p-6 bg-blue-50 border border-blue-100 rounded-2xl flex items-start gap-4">
-                <span class="text-xl">⚖️</span>
-                <p class="text-xs text-blue-800 leading-relaxed">
-                    <strong>Rechtlicher Goldstandard:</strong> Da Ihre Rezeptur exakt 15% NRV der Vitamine enthält, haben Sie das volle Recht, mit der Verringerung von Müdigkeit zu werben. Das ist der stärkste legale Claim im Energy-Segment.
-                </p>
-            </div>
         </section>
 
-        <!-- FINAL MARKETING MATRIX -->
-        <section id="marketing" class="bg-amber-500 rounded-[3rem] p-10 md:p-16 text-slate-900">
-            <h2 class="text-4xl font-black mb-12 text-center italic uppercase tracking-tighter">Strategic Pitch Deck</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                <div class="bg-white/30 backdrop-blur-md p-8 rounded-3xl border border-white/20">
-                    <h3 class="text-2xl font-black mb-4">Der "High-Performance" Claim</h3>
-                    <p class="text-sm font-medium mb-8">Zielgruppe: E-Sports, Programmierer, Manager.</p>
-                    <div class="bg-slate-900 text-amber-400 p-6 rounded-2xl font-bold italic shadow-lg">
-                        "Wachheit in Sekunden. Keine Dose, kein Zucker, kein Limit. Der sublinguale Shortcut für Ihren Fokus."
-                    </div>
+        <!-- 5. MARKETING MATRIX -->
+        <section id="marketing" class="scroll-mt-20">
+            <div class="mb-12 text-center max-w-3xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight uppercase">Marketing Matrix & Strategy</h2>
+                <p class="text-gray-600 text-lg">
+                    Wie übersetzt man diese wissenschaftliche Tiefe in verkaufsstarke Argumente? Hier sind die Kernbotschaften.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white rounded-3xl shadow p-8 border border-gray-100 hover:shadow-xl transition-shadow group">
+                    <div class="text-4xl mb-4 group-hover:scale-110 transition-transform">🎯</div>
+                    <h3 class="font-extrabold text-lg mb-2">Microdosing</h3>
+                    <p class="text-gray-500 text-sm mb-6 leading-relaxed">Weg vom "Viel hilft viel". Präzise Energie für Fokus ohne Zittrigkeit. Das "Smart Drug" Argument.</p>
+                    <div class="text-[10px] bg-gray-100 p-2 rounded-lg text-gray-800 font-mono font-bold">"Präzise Energie. Kein Überdrehen."</div>
                 </div>
-                <div class="bg-white/30 backdrop-blur-md p-8 rounded-3xl border border-white/20">
-                    <h3 class="text-2xl font-black mb-4">Der "Wellness-Energy" Claim</h3>
-                    <p class="text-sm font-medium mb-8">Zielgruppe: Veganer, Biohacker, Studenten.</p>
-                    <div class="bg-slate-900 text-white p-6 rounded-2xl font-bold italic shadow-lg">
-                        "Optimieren Sie Ihren Fokus mit der Kraft von Adaptogenen. Geistige Leistung ohne den künstlichen Crash."
-                    </div>
+                <div class="bg-white rounded-3xl shadow p-8 border border-gray-100 hover:shadow-xl transition-shadow group">
+                    <div class="text-4xl mb-4 group-hover:scale-110 transition-transform">⏱️</div>
+                    <h3 class="font-extrabold text-lg mb-2">Instant On</h3>
+                    <p class="text-gray-500 text-sm mb-6 leading-relaxed">Fokus auf die sublinguale Aufnahme. Perfekt für den Moment kurz vor dem Meeting oder Training.</p>
+                    <div class="text-[10px] bg-gray-100 p-2 rounded-lg text-gray-800 font-mono font-bold">"Energie in Sekunden, nicht in Litern."</div>
+                </div>
+                <div class="bg-white rounded-3xl shadow p-8 border border-gray-100 hover:shadow-xl transition-shadow group">
+                    <div class="text-4xl mb-4 group-hover:scale-110 transition-transform">🚫</div>
+                    <h3 class="font-extrabold text-lg mb-2">Zero Crash</h3>
+                    <p class="text-gray-500 text-sm mb-6 leading-relaxed">Verzicht auf 27g Zucker. Der Guarana-Depot-Effekt verhindert das berühmte Insulin-Loch.</p>
+                    <div class="text-[10px] bg-gray-100 p-2 rounded-lg text-gray-800 font-mono font-bold">"Konstante Leistung. Kein Zucker-Koma."</div>
+                </div>
+                <div class="bg-white rounded-3xl shadow p-8 border border-gray-100 hover:shadow-xl transition-shadow group">
+                    <div class="text-4xl mb-4 group-hover:scale-110 transition-transform">💡</div>
+                    <h3 class="font-extrabold text-lg mb-2">Clean Performance</h3>
+                    <p class="text-gray-500 text-sm mb-6 leading-relaxed">Nutzung des Health-Claims für Vitamin B5 (geistige Leistung). Ein echtes Gehirn-Tool.</p>
+                    <div class="text-[10px] bg-gray-100 p-2 rounded-lg text-gray-800 font-mono font-bold">"Wachheit durch Bio-Synergie."</div>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <footer class="bg-slate-900 py-16 text-center border-t border-slate-800">
-        <p class="text-slate-500 text-xs font-black uppercase tracking-[0.3em] mb-4">Yellow Kangaroo Intelligence Unit</p>
-        <p class="text-slate-600 text-[10px]">© 2024 Basierend auf der Rezeptur-Analyse V2. Alle Claims NHCR geprüft.</p>
+    <footer class="bg-gray-900 py-16 text-center">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-2xl font-black text-white mb-2 uppercase tracking-tighter">Yellow Kangaroo</div>
+            <p class="text-gray-500 text-xs font-bold uppercase tracking-widest">Full Strategy & Compliance Report 2024</p>
+            <div class="mt-8 text-[10px] text-gray-600 max-w-xl mx-auto">
+                Hinweis: Alle Analysen basieren auf den vom Hersteller angegebenen Inhaltsstoffen. Die Health Claims beziehen sich auf die Verordnung (EU) Nr. 432/2012.
+            </div>
+        </div>
     </footer>
 
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // --- DATA OBJECTS ---
+        // --- DATA OBJECTS (Merging all info) ---
         const ingredients = [
+            {
+                id: 'coffein',
+                name: 'Coffein',
+                icon: '⚡',
+                dose: '25 mg',
+                comparison: '80 mg (Red Bull)',
+                bio: 'Sublingual aufgenommen umgeht Coffein den First-Pass-Effekt. 25mg entsprechen gefühlt 60mg oral, wirken aber 3,5x schneller.',
+                marketing: 'Fokus auf Schnelligkeit und Präzision. "Instant-On" Modus ohne Herzrasen.',
+                legal: 'Wachsamkeit & Konzentration (EFSA on-hold).'
+            },
             {
                 id: 'guarana',
                 name: 'Guaranasamen',
                 icon: '🌱',
                 dose: '12,5 mg Extrakt (entspr. 62,5 mg)',
-                science: 'Natürliches Coffein ist an Gerbstoffe gebunden. Die Freisetzung erfolgt zeitversetzt, was die Wirkungsdauer auf bis zu 4-6 Stunden verlängert.',
-                marketing: 'Die "Batterie" hinter dem Kick. Verhindert den plötzlichen Leistungsabfall nach dem Coffein-Peak.',
-                claim: 'Unterstützt die Ausdauer.'
+                comparison: 'Meist 0 mg',
+                bio: 'Gebunden an Gerbstoffe wird dieses Coffein über 4-6 Stunden freigesetzt. Es bildet das Depot-Fundament.',
+                marketing: 'Die Antwort auf den Crash. Energie, die hält. Verkaufsargument für Langzeit-Fokus (Büro/Studium).',
+                legal: 'Natürlicher Performance-Treiber.'
             },
             {
                 id: 'ginseng',
                 name: 'Ginsengwurzel',
                 icon: '🌿',
                 dose: '7,5 mg Extrakt (entspr. 2,5 mg)',
-                science: 'Adaptogen. Hilft dem Körper, die Cortisolausschüttung (Stresshormon) zu regulieren, die oft durch Coffein getriggert wird.',
-                marketing: 'Scharfer Fokus ohne Nervosität. Die Zutat für "Coolness" unter Druck.',
-                claim: 'Mentale Leistungsfähigkeit.'
+                comparison: '0 mg',
+                bio: 'Adaptogen. Reguliert die Stressantwort des Körpers auf Coffein und schützt die Nebennieren.',
+                marketing: 'Das "Gehirn-Hacking" Argument. Wach, aber ruhig und gelassen. Premium-Abgrenzung zu Billig-Energy.',
+                legal: 'Kognitive & Mentale Aktivität (Pending).'
             },
             {
-                id: 'coffein',
-                name: 'Reines Coffein',
-                icon: '⚡',
-                dose: '25 mg (Synthetisch)',
-                science: 'Blockiert die Adenosin-Rezeptoren im Gehirn. Durch sublinguale Aufnahme (Mundschleimhaut) wirkt es ca. 3,5x schneller als geschlucktes Coffein.',
-                marketing: 'Der Instant-On Button. Sofortige Aufmerksamkeit, wenn jede Sekunde zählt.',
-                claim: 'Verbesserte Konzentration.'
-            },
-            {
-                id: 'bcomplex',
+                id: 'vitamins',
                 name: 'B-Vitamin Komplex',
                 icon: '💊',
                 dose: 'B3, B5, B6, B12 (je 15% NRV)',
-                science: 'Kofaktoren im mitochondrialen Energiestoffwechsel. B5 ist essenziell für die Synthese von Neurotransmittern.',
-                marketing: 'Bio-Kraftstoff für die Nerven. EU-weit bestätigte Wirkung gegen Ermüdung.',
-                claim: 'Müdigkeits-Killer (Safe Claim).'
+                comparison: 'Oft überdosiert (Wirkverlust)',
+                bio: 'Exakte Dosierung für maximale enzymatische Aufnahme im Nervensystem. Sublinguale Aufnahme von B12 ist oraler Aufnahme überlegen.',
+                marketing: 'Der "Legale Motor". Nutzung des EU-Claims für B5: "Trägt zur geistigen Leistung bei".',
+                legal: 'NHCR Konform (Müdigkeit, Energiestoffwechsel, Geistige Leistung).'
+            },
+            {
+                id: 'taurin',
+                name: 'Taurin',
+                icon: '🐂',
+                dose: '15 mg',
+                comparison: '1000 mg',
+                bio: 'Moduliert die Ionenkanäle. In dieser Dosierung synergetisch zur Glättung der Coffeinwirkung.',
+                marketing: 'Synergie statt Überschuss. Modulator für eine saubere Energiekurve.',
+                legal: 'Wirkstoff-Modulator.'
             }
         ];
 
-        // --- INTERACTIVITY LOGIC ---
+        // --- INTERACTION LOGIC ---
         function initDashboard() {
-            const nav = document.getElementById('ing-nav');
+            const nav = document.getElementById('ingredient-nav');
             ingredients.forEach((ing, i) => {
                 const btn = document.createElement('button');
-                btn.className = `w-full text-left p-5 rounded-2xl font-bold transition-all border border-transparent flex items-center gap-3 ${i===0 ? 'bg-amber-500 text-slate-900 shadow-xl' : 'text-slate-500 hover:bg-slate-200'}`;
-                btn.innerHTML = `<span class="text-xl">${ing.icon}</span> ${ing.name}`;
-                btn.onclick = () => selectIng(ing, btn);
+                btn.className = `w-full text-left p-5 rounded-2xl font-bold transition-all flex items-center shadow-sm border border-transparent ${i === 0 ? 'bg-yellow-500 text-gray-900 border-yellow-400' : 'bg-white text-gray-500 hover:bg-yellow-50'}`;
+                btn.innerHTML = `<span class="text-2xl mr-4">${ing.icon}</span> ${ing.name}`;
+                btn.onclick = () => selectIngredient(ing, btn);
                 nav.appendChild(btn);
             });
-            // Initial Load
-            selectIng(ingredients[0], nav.firstChild);
+            // Initial Select
+            selectIngredient(ingredients[0], nav.firstChild);
             renderCharts();
         }
 
-        function selectIng(ing, btn) {
-            const btns = document.querySelectorAll('#ing-nav button');
-            btns.forEach(b => b.className = 'w-full text-left p-5 rounded-2xl font-bold text-slate-500 hover:bg-slate-200 border border-transparent flex items-center gap-3');
-            btn.className = 'w-full text-left p-5 rounded-2xl font-bold bg-amber-500 text-slate-900 shadow-xl border border-amber-400 flex items-center gap-3';
+        function selectIngredient(ing, btn) {
+            // UI Toggle
+            const btns = document.querySelectorAll('#ingredient-nav button');
+            btns.forEach(b => b.className = 'w-full text-left p-5 rounded-2xl font-bold transition-all flex items-center shadow-sm border border-transparent bg-white text-gray-500 hover:bg-yellow-50');
+            btn.className = 'w-full text-left p-5 rounded-2xl font-bold transition-all flex items-center shadow-sm border border-yellow-400 bg-yellow-500 text-gray-900';
 
-            const display = document.getElementById('ing-display');
+            // Display Render
+            const display = document.getElementById('ingredient-display');
             display.innerHTML = `
-                <div class="animate-fade">
-                    <div class="flex items-center gap-6 mb-8 pb-8 border-b border-slate-100">
-                        <span class="text-6xl p-4 bg-slate-50 rounded-3xl">${ing.icon}</span>
+                <div class="fade-in">
+                    <div class="flex items-center gap-6 mb-10 pb-8 border-b border-gray-100">
+                        <span class="text-6xl bg-gray-50 p-6 rounded-3xl">${ing.icon}</span>
                         <div>
-                            <h3 class="text-3xl font-black text-slate-900">${ing.name}</h3>
-                            <p class="text-amber-600 font-black uppercase text-xs tracking-widest mt-1">Dosis im Spray: ${ing.dose}</p>
+                            <h3 class="text-3xl font-black text-gray-900">${ing.name}</h3>
+                            <p class="text-yellow-600 font-bold uppercase tracking-widest text-xs mt-1">Dosis im Spray: ${ing.dose}</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <div class="space-y-4">
-                            <h4 class="text-xs font-black text-slate-400 uppercase tracking-widest">Die Biologische Logik</h4>
-                            <p class="text-slate-600 leading-relaxed text-sm">${ing.science}</p>
-                            <div class="inline-block bg-slate-100 px-3 py-1 rounded-lg text-[10px] font-bold text-slate-500 uppercase">Status: ${ing.claim}</div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <div class="space-y-8">
+                            <div>
+                                <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Physiologische Logik</h4>
+                                <p class="text-gray-700 leading-relaxed text-sm">${ing.bio}</p>
+                            </div>
+                            <div class="bg-gray-50 p-5 rounded-2xl border border-gray-100">
+                                <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-2">EU-Health Claim Status</h4>
+                                <p class="text-gray-900 font-bold italic text-sm">"${ing.legal}"</p>
+                            </div>
                         </div>
-                        <div class="bg-slate-900 p-8 rounded-3xl text-white relative">
-                            <div class="absolute top-4 right-4 text-amber-500 opacity-20 text-4xl font-black">"</div>
-                            <h4 class="text-xs font-black text-amber-500 uppercase tracking-widest mb-4">Verkaufsargument (Pitch)</h4>
-                            <p class="text-xl font-bold italic leading-tight">"${ing.marketing}"</p>
+                        <div class="bg-gray-900 text-white p-8 rounded-[2rem] flex flex-col justify-center">
+                            <h4 class="text-yellow-500 font-black uppercase text-xs tracking-widest mb-4 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"></path></svg>
+                                Marketing Pitch
+                            </h4>
+                            <p class="text-xl font-bold italic leading-tight italic">"${ing.marketing}"</p>
+                            <div class="mt-6 pt-4 border-t border-gray-800 text-[10px] text-gray-500 uppercase tracking-widest">
+                                Vergleich zu Dose: ${ing.comparison}
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        // --- VISUALIZATION LOGIC ---
+        // --- CHART RENDER ---
         function renderCharts() {
-            // Radar Chart (Comparative)
+            // Radar
             const ctxR = document.getElementById('radarChart').getContext('2d');
             new Chart(ctxR, {
                 type: 'radar',
                 data: {
-                    labels: ['Aufnahme-Tempo', 'Energie-Dauer', 'Magen-Komfort', 'Lifestyle-Faktor', 'Fokus-Klarheit'],
+                    labels: ['Wirkeintritt', 'Energie-Dauer', 'Magenmilde', 'Mobilität', 'Zuckerfrei'],
                     datasets: [{
-                        label: 'YK Performance Spray',
-                        data: [98, 90, 100, 95, 92],
+                        label: 'Yellow Kangaroo',
+                        data: [98, 85, 100, 100, 100],
                         backgroundColor: 'rgba(245, 158, 11, 0.4)',
                         borderColor: '#F59E0B',
-                        pointBackgroundColor: '#F59E0B',
-                        borderWidth: 3
+                        pointBackgroundColor: '#F59E0B'
                     }, {
-                        label: 'Energy Drink (Red Bull)',
-                        data: [35, 30, 15, 40, 55],
+                        label: 'Energy Drink',
+                        data: [45, 40, 20, 30, 10],
                         backgroundColor: 'rgba(15, 23, 42, 0.1)',
                         borderColor: '#0F172A',
-                        pointBackgroundColor: '#0F172A',
-                        borderWidth: 2
+                        pointBackgroundColor: '#0F172A'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { r: { ticks: { display: false }, grid: { color: '#E2E8F0' }, pointLabels: { font: { weight: 'bold', size: 10 } } } },
+                    scales: { r: { ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.05)' } } },
                     plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, font: { weight: 'bold' } } } }
                 }
             });
 
-            // Kinetics Chart (Science)
+            // Kinetics
             const ctxK = document.getElementById('kineticsChart').getContext('2d');
             new Chart(ctxK, {
                 type: 'line',
                 data: {
-                    labels: ['0m', '2m', '10m', '30m', '60m', '120m', '180m', '240m'],
+                    labels: ['0m', '5m', '15m', '30m', '60m', '120m', '240m'],
                     datasets: [{
-                        label: 'Yellow Kangaroo (Sublingual)',
-                        data: [0, 65, 92, 95, 88, 80, 72, 60],
+                        label: 'Spray (Sublingual)',
+                        data: [0, 65, 90, 95, 88, 75, 50],
                         borderColor: '#F59E0B',
                         backgroundColor: 'rgba(245, 158, 11, 0.1)',
                         fill: true, tension: 0.4, borderWidth: 4
                     }, {
-                        label: 'Energy Drink (Oraler Weg)',
-                        data: [0, 2, 8, 45, 100, 30, 10, 5],
-                        borderColor: '#94a3b8',
+                        label: 'Energy Drink (Oral)',
+                        data: [0, 5, 20, 55, 100, 35, 10],
+                        borderColor: '#3B82F6',
                         borderDash: [5, 5],
                         tension: 0.4, borderWidth: 2
                     }]
@@ -459,19 +522,12 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { 
-                        tooltip: { mode: 'index', intersect: false },
-                        legend: { position: 'top', labels: { usePointStyle: true } }
-                    },
-                    scales: { 
-                        y: { beginAtZero: true, max: 110, title: { display: true, text: 'Wirkungs-Intensität (%)', font: { weight: 'bold' } } },
-                        x: { title: { display: true, text: 'Zeit nach Anwendung', font: { weight: 'bold' } } }
-                    }
+                    plugins: { legend: { position: 'top', labels: { usePointStyle: true } } },
+                    scales: { y: { beginAtZero: true, max: 110, title: { display: true, text: 'Wirkung (%)' } } }
                 }
             });
         }
 
-        // --- BOOTSTRAP ---
         document.addEventListener('DOMContentLoaded', initDashboard);
     </script>
 </body>
