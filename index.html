@@ -4,51 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yellow Kangaroo vs Energy Drink</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Include your main CSS file -->
-    <script src="script.js" defer></script> <!-- Include your main JavaScript file -->
-</head>
-<body>
-
-    <h1>Yellow Kangaroo vs Energy Drink</h1>
-
-    <div class="tabs">
-        <button class="tablinks" onclick="openTab(event, 'Wirkungsanalyse')">Wirkungsanalyse</button>
-        <button class="tablinks" onclick="openTab(event, 'ComplianceLab')">Compliance Lab</button>
-    </div>
-
-    <div id="Wirkungsanalyse" class="tabcontent">
-        <h2>Wirkungsanalyse</h2>
-        <!-- Original Wirkungsanalyse content goes here -->
-        <div id="charts_wirkungsanalyse">
-            <!-- Include charts and interactive elements for Wirkungsanalyse -->
-        </div>
-    </div>
-
-    <div id="ComplianceLab" class="tabcontent" style="display:none;">
-        <h2>Compliance Lab</h2>
-        <!-- New Compliance Lab content goes here -->
-        <div id="charts_compliance">
-            <!-- Include charts and interactive elements for Compliance Lab -->
-        </div>
-    </div>
-
-    <script>
-        function openTab(evt, tabName) {
-            // Hide all tab contents
-            var tabcontents = document.getElementsByClassName("tabcontent");
-            for (var i = 0; i < tabcontents.length; i++) {
-                tabcontents[i].style.display = "none";
-            }
-            // Remove 'active' class from all tab buttons
-            var tablinks = document.getElementsByClassName("tablinks");
-            for (var i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            // Show the current tab and add an "active" class to the button that opened the tab
-            document.getElementById(tabName).style.display = "block";
-            evt.currentTarget.className += " active";
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .tab-content {
+            display: none;
         }
-    </script>
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto">
+        <h1 class="text-2xl font-bold text-center my-5">Yellow Kangaroo vs Energy Drink</h1>
+        <div class="tabs">
+            <button id="tab1" class="tab-button bg-blue-500 text-white py-2 px-4 rounded-l-lg">Wirkungsanalyse</button>
+            <button id="tab2" class="tab-button bg-gray-300 py-2 px-4 rounded-r-lg">Compliance Lab</button>
+        </div>
+        <div id="content1" class="tab-content active">
+            <h2 class="text-xl font-semibold mt-5">Wirkungsanalyse</h2>
+            <canvas id="radarChart"></canvas>
+            <canvas id="absorptionChart"></canvas>
+            <div id="ingredients"></div>
+            <div id="marketingMatrix"></div>
+        </div>
+        <div id="content2" class="tab-content">
+            <h2 class="text-xl font-semibold mt-5">Compliance Lab</h2>
+            <canvas id="kineticsChart"></canvas>
+            <div id="complianceMatrix"></div>
+            <div id="marketingClaims"></div>
+        </div>
+    </div>
+    <script>
+        const tab1Button = document.getElementById('tab1');
+        const tab2Button = document.getElementById('tab2');
+        const content1 = document.getElementById('content1');
+        const content2 = document.getElementById('content2');
 
+        tab1Button.addEventListener('click', () => {
+            content1.classList.add('active');
+            content2.classList.remove('active');
+            tab1Button.classList.add('bg-blue-500');
+            tab1Button.classList.remove('bg-gray-300');
+            tab2Button.classList.add('bg-gray-300');
+            tab2Button.classList.remove('bg-blue-500');
+        });
+
+        tab2Button.addEventListener('click', () => {
+            content2.classList.add('active');
+            content1.classList.remove('active');
+            tab2Button.classList.add('bg-blue-500');
+            tab2Button.classList.remove('bg-gray-300');
+            tab1Button.classList.add('bg-gray-300');
+            tab1Button.classList.remove('bg-blue-500');
+        });
+
+        // Chart.js example setup
+        const ctxRadar = document.getElementById('radarChart').getContext('2d');
+        const radarChart = new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: ['Label1', 'Label2', 'Label3'],
+                datasets: [{
+                    label: 'Wirkungsanalyse Data',
+                    data: [20, 10, 30],
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {}
+        });
+
+        const ctxAbsorption = document.getElementById('absorptionChart').getContext('2d');
+        const absorptionChart = new Chart(ctxAbsorption, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar'],
+                datasets: [{
+                    label: 'Absorption Rate',
+                    data: [12, 19, 3],
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {}
+        });
+
+        const ctxKinetics = document.getElementById('kineticsChart').getContext('2d');
+        const kineticsChart = new Chart(ctxKinetics, {
+            type: 'bar',
+            data: {
+                labels: ['A', 'B', 'C'],
+                datasets: [{
+                    label: 'Kinetics Data',
+                    data: [5, 15, 25],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {}
+        });
+    </script>
 </body>
 </html>
