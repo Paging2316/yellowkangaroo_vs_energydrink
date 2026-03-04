@@ -3,31 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Title</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Yellow Kangaroo vs Energy Drink</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Include your main CSS file -->
+    <script src="script.js" defer></script> <!-- Include your main JavaScript file -->
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="#wirkungsanalyse">Wirkungsanalyse</a></li>
-                <li><a href="#complianceLab">Compliance Lab</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <main>
-        <section id="wirkungsanalyse">
-            <h2>Wirkungsanalyse</h2>
-            <!-- Existing content here -->
-        </section>
-        <section id="complianceLab">
-            <h2>Compliance Lab</h2>
-            <div>
-                <p>New compliance lab content goes here.</p>
-                <!-- Existing compliance lab content, if any -->
-            </div>
-        </section>
-    </main>
+    <h1>Yellow Kangaroo vs Energy Drink</h1>
+
+    <div class="tabs">
+        <button class="tablinks" onclick="openTab(event, 'Wirkungsanalyse')">Wirkungsanalyse</button>
+        <button class="tablinks" onclick="openTab(event, 'ComplianceLab')">Compliance Lab</button>
+    </div>
+
+    <div id="Wirkungsanalyse" class="tabcontent">
+        <h2>Wirkungsanalyse</h2>
+        <!-- Original Wirkungsanalyse content goes here -->
+        <div id="charts_wirkungsanalyse">
+            <!-- Include charts and interactive elements for Wirkungsanalyse -->
+        </div>
+    </div>
+
+    <div id="ComplianceLab" class="tabcontent" style="display:none;">
+        <h2>Compliance Lab</h2>
+        <!-- New Compliance Lab content goes here -->
+        <div id="charts_compliance">
+            <!-- Include charts and interactive elements for Compliance Lab -->
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            // Hide all tab contents
+            var tabcontents = document.getElementsByClassName("tabcontent");
+            for (var i = 0; i < tabcontents.length; i++) {
+                tabcontents[i].style.display = "none";
+            }
+            // Remove 'active' class from all tab buttons
+            var tablinks = document.getElementsByClassName("tablinks");
+            for (var i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            // Show the current tab and add an "active" class to the button that opened the tab
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+
 </body>
 </html>
